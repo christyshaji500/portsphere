@@ -1,0 +1,7 @@
+code;name;descr
+PORT_DUES;Port Dues;Charged per gross tonnage per call
+BERTH_HIRE;Berth Hire;Charged per hour at berth
+STORAGE;Storage;Per TEU per day after free days
+REEFER_PLUG;Reefer Plug-in;Per reefer container per day
+GATE_FEE;Gate Fee;Per gate pass
+DOC_FEE;Documentation Fee;Per official document issued

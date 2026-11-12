@@ -73,3 +73,14 @@ entity SignatureStatuses : CodeList {
   key code        : String(10);
       criticality : Integer;
 }
+
+/** What the port charges for */
+entity ChargeTypes : CodeList {
+  key code : String(12);
+}
+
+/** Invoice lifecycle */
+entity InvoiceStatuses : CodeList {
+  key code        : String(10);
+      criticality : Integer;
+}

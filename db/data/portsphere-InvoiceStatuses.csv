@@ -1,0 +1,6 @@
+code;name;descr;criticality
+DRAFT;Draft;Being prepared;0
+ISSUED;Issued;Sent to customer;2
+PAID;Paid;Payment received;3
+OVERDUE;Overdue;Past due date;1
+CANCELLED;Cancelled;Invoice cancelled;1

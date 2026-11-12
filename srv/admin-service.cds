@@ -3,6 +3,8 @@ using from '../db/codelists';
 using from '../db/vessel-operations';
 using from '../db/cargo';
 using from '../db/documents';
+using from '../db/billing';
+
 
 service AdminService @(path: '/admin') {
   entity Berths           as projection on ps.Berths;
@@ -25,6 +27,11 @@ service AdminService @(path: '/admin') {
   entity DeliveryOrders as projection on ps.DeliveryOrders;
   entity GatePasses     as projection on ps.GatePasses;
 
+    // Billing
+  entity Tariffs      as projection on ps.Tariffs;
+  entity Invoices     as projection on ps.Invoices;
+  entity InvoiceItems as projection on ps.InvoiceItems;
+
   // Code lists – read-only lookups
   @readonly entity VesselTypes     as projection on ps.VesselTypes;
   @readonly entity PartnerRoles    as projection on ps.PartnerRoles;
@@ -41,4 +48,7 @@ service AdminService @(path: '/admin') {
   @readonly entity DocumentTypes     as projection on ps.DocumentTypes;
   @readonly entity DocumentStatuses  as projection on ps.DocumentStatuses;
   @readonly entity SignatureStatuses as projection on ps.SignatureStatuses;
+
+  @readonly entity ChargeTypes     as projection on ps.ChargeTypes;
+  @readonly entity InvoiceStatuses as projection on ps.InvoiceStatuses;
 }

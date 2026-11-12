@@ -1,0 +1,13 @@
+### Should FAIL: negative rate (@assert.range)
+POST http://localhost:4004/admin/Invoices
+Content-Type: application/json
+
+{
+  "invoiceNumber": "INV-2026-0099",
+  "call_ID": "d1000000-0000-4000-8000-000000000003",
+  "billTo_ID": "b1000000-0000-4000-8000-000000000001",
+  "invoiceDate": "2026-11-12",
+  "items": [
+    { "lineNo": 1, "chargeType_code": "GATE_FEE", "quantity": 1, "rate": -600 }
+  ]
+}
