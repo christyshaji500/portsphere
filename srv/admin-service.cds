@@ -1,10 +1,15 @@
 using { portsphere as ps } from '../db/master-data';
 using from '../db/codelists';
+using from '../db/vessel-operations';
 
 service AdminService @(path: '/admin') {
   entity Berths           as projection on ps.Berths;
   entity Vessels          as projection on ps.Vessels;
   entity BusinessPartners as projection on ps.BusinessPartners;
+
+    // Vessel operations
+  entity VesselCalls      as projection on ps.VesselCalls;
+  entity BerthAllocations as projection on ps.BerthAllocations;
 
   // Code lists – read-only lookups
   @readonly entity VesselTypes     as projection on ps.VesselTypes;

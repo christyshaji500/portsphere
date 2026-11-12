@@ -1,0 +1,42 @@
+### 1) Deep insert: create a call AND its berth allocation in one request
+POST http://localhost:4004/admin/VesselCalls
+Content-Type: application/json
+
+{
+  "callNumber": "VC-2026-0005",
+  "vessel_ID": "c1000000-0000-4000-8000-000000000004",
+  "voyageNumber": "AS19",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000001",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-18T02:00:00Z",
+  "etd": "2026-11-19T14:00:00Z",
+  "berthAllocations": [
+    {
+      "berth_ID": "a1000000-0000-4000-8000-000000000004",
+      "fromTime": "2026-11-18T02:00:00Z",
+      "toTime": "2026-11-19T14:00:00Z"
+    }
+  ]
+}
+
+### 2) Should FAIL: vessel does not exist (@assert.target)
+POST http://localhost:4004/admin/VesselCalls
+Content-Type: application/json
+
+{
+  "callNumber": "VC-2026-0006",
+  "vessel_ID": "c1000000-0000-4000-8000-000000000999",
+  "voyageNumber": "XX01",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000001",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-20T02:00:00Z",
+  "etd": "2026-11-21T14:00:00Z"
+}
+
+### 3) Should FAIL: mandatory fields missing (@mandatory)
+POST http://localhost:4004/admin/VesselCalls
+Content-Type: application/json
+
+{
+  "callNumber": "VC-2026-0007"
+}
