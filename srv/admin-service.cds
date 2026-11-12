@@ -2,6 +2,7 @@ using { portsphere as ps } from '../db/master-data';
 using from '../db/codelists';
 using from '../db/vessel-operations';
 using from '../db/cargo';
+using from '../db/documents';
 
 service AdminService @(path: '/admin') {
   entity Berths           as projection on ps.Berths;
@@ -18,6 +19,12 @@ service AdminService @(path: '/admin') {
   entity Containers          as projection on ps.Containers;
   entity CustomsDeclarations as projection on ps.CustomsDeclarations;
 
+    // Documents & release
+  entity Documents      as projection on ps.Documents;
+  entity Signatures     as projection on ps.Signatures;
+  entity DeliveryOrders as projection on ps.DeliveryOrders;
+  entity GatePasses     as projection on ps.GatePasses;
+
   // Code lists – read-only lookups
   @readonly entity VesselTypes     as projection on ps.VesselTypes;
   @readonly entity PartnerRoles    as projection on ps.PartnerRoles;
@@ -30,4 +37,8 @@ service AdminService @(path: '/admin') {
   @readonly entity ContainerStatuses   as projection on ps.ContainerStatuses;
   @readonly entity DeclarationTypes    as projection on ps.DeclarationTypes;
   @readonly entity DeclarationStatuses as projection on ps.DeclarationStatuses;
+
+  @readonly entity DocumentTypes     as projection on ps.DocumentTypes;
+  @readonly entity DocumentStatuses  as projection on ps.DocumentStatuses;
+  @readonly entity SignatureStatuses as projection on ps.SignatureStatuses;
 }

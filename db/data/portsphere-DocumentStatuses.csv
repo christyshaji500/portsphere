@@ -1,0 +1,6 @@
+code;name;descr;criticality
+DRAFT;Draft;Being prepared;0
+PENDING_SIGNATURE;Pending Signature;Waiting for one or more signatures;2
+SIGNED;Signed;All required signatures collected;3
+LOCKED;Locked;Final – PDF sealed with hash;3
+REVOKED;Revoked;Withdrawn and no longer valid;1

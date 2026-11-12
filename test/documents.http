@@ -1,0 +1,39 @@
+### 1) Deep insert: document + 2 required signatures
+POST http://localhost:4004/admin/Documents
+Content-Type: application/json
+
+{
+  "documentNumber": "DOC-2026-0003",
+  "type_code": "DO",
+  "title": "Delivery Order (test)",
+  "signatures": [
+    { "sequence": 1, "signerRole": "Shipping Line", "signerEmail": "ops@bluewave.example" },
+    { "sequence": 2, "signerRole": "Consignee",     "signerEmail": "imports@sahyadri.example" }
+  ]
+}
+
+### 2) Should FAIL: movement must be IN or OUT (enum + @assert.range)
+POST http://localhost:4004/admin/GatePasses
+Content-Type: application/json
+
+{
+  "passNumber": "GP-2026-0099",
+  "movement": "XX",
+  "container_ID": "h1000000-0000-4000-8000-000000000002",
+  "truckNumber": "KL07AB1234",
+  "validFrom": "2026-11-13T06:00:00Z",
+  "validTo": "2026-11-13T18:00:00Z"
+}
+
+### 3) Should FAIL: invalid truck number format
+POST http://localhost:4004/admin/GatePasses
+Content-Type: application/json
+
+{
+  "passNumber": "GP-2026-0098",
+  "movement": "OUT",
+  "container_ID": "h1000000-0000-4000-8000-000000000002",
+  "truckNumber": "TRUCK-1",
+  "validFrom": "2026-11-13T06:00:00Z",
+  "validTo": "2026-11-13T18:00:00Z"
+}

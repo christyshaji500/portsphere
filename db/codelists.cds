@@ -56,3 +56,20 @@ entity DeclarationStatuses : CodeList {
   key code        : String(12);
       criticality : Integer;
 }
+
+/** Kind of official document */
+entity DocumentTypes : CodeList {
+  key code : String(10);
+}
+
+/** Document lifecycle: DRAFT → PENDING_SIGNATURE → SIGNED → LOCKED */
+entity DocumentStatuses : CodeList {
+  key code        : String(20);
+      criticality : Integer;
+}
+
+/** Status of one required signature */
+entity SignatureStatuses : CodeList {
+  key code        : String(10);
+      criticality : Integer;
+}

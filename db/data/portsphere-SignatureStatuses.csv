@@ -1,0 +1,4 @@
+code;name;descr;criticality
+PENDING;Pending;Waiting for signer;2
+SIGNED;Signed;Signed by signer;3
+DECLINED;Declined;Signer refused to sign;1

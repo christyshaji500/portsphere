@@ -1,0 +1,4 @@
+code;name;descr
+DO;Delivery Order;Authorises collection of import cargo
+GATEPASS;Gate Pass;Authorises a truck movement through the gate
+INVOICE;Invoice;Port charges invoice
