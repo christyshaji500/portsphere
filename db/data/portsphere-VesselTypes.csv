@@ -1,0 +1,6 @@
+code;name;descr
+CONT;Container Ship;Cellular container vessel
+BULK;Bulk Carrier;Dry bulk cargo vessel
+TANK;Tanker;Oil / chemical / liquid bulk tanker
+RORO;Ro-Ro;Roll-on/roll-off vehicle carrier
+GENC;General Cargo;Break-bulk / multipurpose vessel

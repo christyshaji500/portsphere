@@ -1,0 +1,4 @@
+code;name;descr
+IMP;Import;Cargo discharged for local delivery
+EXP;Export;Cargo loaded for shipment abroad
+TRS;Transshipment;Cargo moved between vessels

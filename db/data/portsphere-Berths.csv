@@ -1,0 +1,6 @@
+ID;code;name;terminal;lengthMeters;maxDraftMeters;craneCount;isActive
+a1000000-0000-4000-8000-000000000001;B01;Container Berth 1;Container Terminal;400.00;16.00;4;true
+a1000000-0000-4000-8000-000000000002;B02;Container Berth 2;Container Terminal;350.00;14.50;3;true
+a1000000-0000-4000-8000-000000000003;B03;Bulk Berth;Bulk Terminal;250.00;13.00;2;true
+a1000000-0000-4000-8000-000000000004;B04;Liquid Jetty;Oil Terminal;280.00;15.50;0;true
+a1000000-0000-4000-8000-000000000005;B05;Multipurpose Berth;General Terminal;180.00;10.00;1;true

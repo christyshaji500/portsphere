@@ -1,0 +1,7 @@
+ID;bpNumber;name;role_code;email;phone;country_code;taxId;isActive
+b1000000-0000-4000-8000-000000000001;BP0001;Oceanic Container Lines;SHIPPING_LINE;ops@oceanic-lines.example;+65 6000 1000;SG;;true
+b1000000-0000-4000-8000-000000000002;BP0002;Bluewave Shipping A/S;SHIPPING_LINE;ops@bluewave.example;+45 3000 2000;DK;;true
+b1000000-0000-4000-8000-000000000003;BP0003;Malabar Ship Agencies Pvt Ltd;AGENT;desk@malabar-agency.example;+91 484 200 3000;IN;32AABCM1234F1Z5;true
+b1000000-0000-4000-8000-000000000004;BP0004;Konkan Customs Brokers;CHA;filings@konkan-cha.example;+91 22 4000 4000;IN;27AABCK5678G1Z2;true
+b1000000-0000-4000-8000-000000000005;BP0005;Deccan Agro Exports;SHIPPER;exports@deccan-agro.example;+91 40 5000 5000;IN;36AABCD9012H1Z8;true
+b1000000-0000-4000-8000-000000000006;BP0006;Sahyadri Industries;CONSIGNEE;imports@sahyadri.example;+91 20 6000 6000;IN;27AABCS3456J1Z4;true

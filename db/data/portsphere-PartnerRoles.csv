@@ -1,0 +1,7 @@
+code;name;descr
+SHIPPING_LINE;Shipping Line;Carrier operating the vessel
+AGENT;Ship Agent;Local agent representing the shipping line
+CHA;Customs Broker;Customs House Agent filing declarations
+SHIPPER;Shipper;Exporter sending cargo
+CONSIGNEE;Consignee;Importer receiving cargo
+TRANSPORTER;Transporter;Trucking company moving cargo in/out

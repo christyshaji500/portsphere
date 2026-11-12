@@ -1,0 +1,8 @@
+code;name;descr;criticality
+PLANNED;Planned;Arrival announced by agent;0
+ARRIVED;Arrived;At anchorage, waiting for berth;2
+BERTHED;Berthed;Moored at berth;3
+WORKING;Working;Cargo operations in progress;3
+COMPLETED;Completed;Cargo operations finished;3
+DEPARTED;Departed;Vessel has left the port;0
+CANCELLED;Cancelled;Call cancelled;1

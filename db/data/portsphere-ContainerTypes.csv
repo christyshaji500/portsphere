@@ -1,0 +1,7 @@
+code;name;descr;teu;reefer
+20GP;20' General Purpose;Standard dry container;1;false
+40GP;40' General Purpose;Standard dry container;2;false
+40HC;40' High Cube;Extra-height dry container;2;false
+20RF;20' Reefer;Refrigerated container;1;true
+40RF;40' Reefer;Refrigerated container;2;true
+20TK;20' Tank;ISO tank container;1;false
