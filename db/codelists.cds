@@ -39,3 +39,20 @@ entity ContainerTypes : CodeList {
 entity HazardClasses : CodeList {
   key code : String(3);
 }
+
+/** Where a container is in its journey through the terminal */
+entity ContainerStatuses : CodeList {
+  key code        : String(12);
+      criticality : Integer;
+}
+
+/** Bill of Entry (import) or Shipping Bill (export) */
+entity DeclarationTypes : CodeList {
+  key code : String(3);
+}
+
+/** Customs clearance lifecycle */
+entity DeclarationStatuses : CodeList {
+  key code        : String(12);
+      criticality : Integer;
+}

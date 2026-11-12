@@ -1,0 +1,7 @@
+code;name;descr;criticality
+DRAFT;Draft;Being prepared by broker;0
+FILED;Filed;Submitted to customs;2
+ASSESSED;Assessed;Duty assessed by customs;2
+DUTY_PAID;Duty Paid;Duty payment received;3
+CLEARED;Cleared;Out of Charge (import) / Let Export Order (export);3
+REJECTED;Rejected;Rejected by customs;1

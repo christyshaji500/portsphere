@@ -1,0 +1,47 @@
+### 1) Two-level deep insert: manifest + B/L + 2 containers in ONE request
+POST http://localhost:4004/admin/Manifests
+Content-Type: application/json
+
+{
+  "manifestNumber": "EGM-2026-1102",
+  "call_ID": "d1000000-0000-4000-8000-000000000002",
+  "direction_code": "EXP",
+  "filedBy_ID": "b1000000-0000-4000-8000-000000000003",
+  "billsOfLading": [
+    {
+      "blNumber": "BWSINCOK2611005",
+      "shipper_ID": "b1000000-0000-4000-8000-000000000005",
+      "portOfLoading": "INCOK",
+      "portOfDischarge": "DKAAR",
+      "cargoType_code": "CONT",
+      "description": "Spices – black pepper and cardamom",
+      "grossWeightKg": 30000,
+      "containers": [
+        { "containerNumber": "BWSU3004006", "type_code": "40GP", "sealNumber": "SL400001", "grossWeightKg": 15000 },
+        { "containerNumber": "BWSU3004011", "type_code": "40GP", "sealNumber": "SL400002", "grossWeightKg": 15000 }
+      ]
+    }
+  ]
+}
+
+### 2) Should FAIL: invalid container number format (@assert.format)
+POST http://localhost:4004/admin/Containers
+Content-Type: application/json
+
+{
+  "bl_ID": "g1000000-0000-4000-8000-000000000003",
+  "containerNumber": "ABC123",
+  "type_code": "20GP",
+  "grossWeightKg": 10000
+}
+
+### 3) Should FAIL: weight 0 (@assert.range)
+POST http://localhost:4004/admin/Containers
+Content-Type: application/json
+
+{
+  "bl_ID": "g1000000-0000-4000-8000-000000000003",
+  "containerNumber": "OCLU1234563",
+  "type_code": "20GP",
+  "grossWeightKg": 0
+}

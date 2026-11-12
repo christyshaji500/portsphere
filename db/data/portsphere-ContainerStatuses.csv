@@ -1,0 +1,7 @@
+code;name;descr;criticality
+ON_VESSEL;On Vessel;Not yet discharged;0
+DISCHARGED;In Yard (Import);Discharged and stacked in yard;3
+HOLD;Customs Hold;Blocked by customs;1
+GATED_OUT;Gated Out;Left the terminal;0
+GATED_IN;In Yard (Export);Received at gate for export;3
+LOADED;Loaded;Loaded on outgoing vessel;0
