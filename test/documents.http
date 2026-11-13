@@ -1,5 +1,5 @@
 ### 1) Deep insert: document + 2 required signatures
-POST http://localhost:4004/admin/Documents
+POST http://localhost:4004/release/Documents
 Content-Type: application/json
 
 {
@@ -13,26 +13,26 @@ Content-Type: application/json
 }
 
 ### 2) Should FAIL: movement must be IN or OUT (enum + @assert.range)
-POST http://localhost:4004/admin/GatePasses
+POST http://localhost:4004/release/GatePasses
 Content-Type: application/json
 
 {
   "passNumber": "GP-2026-0099",
   "movement": "XX",
-  "container_ID": "h1000000-0000-4000-8000-000000000002",
+  "container_ID": "21000000-0000-4000-8000-000000000002",
   "truckNumber": "KL07AB1234",
   "validFrom": "2026-11-13T06:00:00Z",
   "validTo": "2026-11-13T18:00:00Z"
 }
 
 ### 3) Should FAIL: invalid truck number format
-POST http://localhost:4004/admin/GatePasses
+POST http://localhost:4004/release/GatePasses
 Content-Type: application/json
 
 {
   "passNumber": "GP-2026-0098",
   "movement": "OUT",
-  "container_ID": "h1000000-0000-4000-8000-000000000002",
+  "container_ID": "21000000-0000-4000-8000-000000000002",
   "truckNumber": "TRUCK-1",
   "validFrom": "2026-11-13T06:00:00Z",
   "validTo": "2026-11-13T18:00:00Z"

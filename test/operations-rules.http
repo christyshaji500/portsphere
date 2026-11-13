@@ -1,0 +1,47 @@
+@ops = http://localhost:4004/operations
+
+### 1) Should FAIL: ETD before ETA
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "callNumber": "VC-2026-0101",
+  "vessel_ID": "c1000000-0000-4000-8000-000000000003",
+  "voyageNumber": "MS28",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000001",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-20T10:00:00Z",
+  "etd": "2026-11-19T10:00:00Z"
+}
+
+### 2) Should FAIL with TWO errors at once (req.error collects): bad ETD + bad allocation inside deep insert
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "callNumber": "VC-2026-0102",
+  "vessel_ID": "c1000000-0000-4000-8000-000000000003",
+  "voyageNumber": "MS29",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000001",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-22T10:00:00Z",
+  "etd": "2026-11-21T10:00:00Z",
+  "berthAllocations": [
+    { "berth_ID": "a1000000-0000-4000-8000-000000000003", "fromTime": "2026-11-22T12:00:00Z", "toTime": "2026-11-22T08:00:00Z" }
+  ]
+}
+
+### 3) Should FAIL: PATCH only the ETD to a time before the stored ETA (tests effectiveValues)
+PATCH {{ops}}/VesselCalls(d1000000-0000-4000-8000-000000000002)
+Content-Type: application/json
+
+{ "etd": "2026-11-14T00:00:00Z" }
+
+### 4) Should SUCCEED: valid PATCH
+PATCH {{ops}}/VesselCalls(d1000000-0000-4000-8000-000000000002)
+Content-Type: application/json
+
+{ "etd": "2026-11-17T06:00:00Z" }
+
+### 5) Read-only master data: should FAIL (405)
+DELETE {{ops}}/Vessels(c1000000-0000-4000-8000-000000000001)

@@ -1,5 +1,5 @@
 ### Should FAIL: negative rate (@assert.range)
-POST http://localhost:4004/admin/Invoices
+POST http://localhost:4004/billing/Invoices
 Content-Type: application/json
 
 {

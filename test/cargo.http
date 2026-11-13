@@ -1,5 +1,5 @@
 ### 1) Two-level deep insert: manifest + B/L + 2 containers in ONE request
-POST http://localhost:4004/admin/Manifests
+POST http://localhost:4004/cargo/Manifests
 Content-Type: application/json
 
 {
@@ -25,22 +25,22 @@ Content-Type: application/json
 }
 
 ### 2) Should FAIL: invalid container number format (@assert.format)
-POST http://localhost:4004/admin/Containers
+POST http://localhost:4004/cargo/Containers
 Content-Type: application/json
 
 {
-  "bl_ID": "g1000000-0000-4000-8000-000000000003",
+  "bl_ID": "11000000-0000-4000-8000-000000000003",
   "containerNumber": "ABC123",
   "type_code": "20GP",
   "grossWeightKg": 10000
 }
 
 ### 3) Should FAIL: weight 0 (@assert.range)
-POST http://localhost:4004/admin/Containers
+POST http://localhost:4004/cargo/Containers
 Content-Type: application/json
 
 {
-  "bl_ID": "g1000000-0000-4000-8000-000000000003",
+  "bl_ID": "11000000-0000-4000-8000-000000000003",
   "containerNumber": "OCLU1234563",
   "type_code": "20GP",
   "grossWeightKg": 0
