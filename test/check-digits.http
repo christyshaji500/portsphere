@@ -1,0 +1,48 @@
+@md = http://localhost:4004/masterdata
+@cargo = http://localhost:4004/cargo
+
+### 1) Should FAIL: IMO typo (9312342, should end in 1)
+POST {{md}}/Vessels
+Content-Type: application/json
+
+{ "imoNumber": "9312342", "name": "TYPO TEST", "type_code": "CONT", "lengthOverall": 200, "maxDraft": 10 }
+
+### 2) Should SUCCEED: valid IMO
+POST {{md}}/Vessels
+Content-Type: application/json
+
+{ "imoNumber": "9074729", "name": "COROMANDEL TRADER", "type_code": "GENC", "lengthOverall": 160, "maxDraft": 9.2 }
+
+### 3) Should FAIL: container typo (should end in 3)
+POST {{cargo}}/Containers
+Content-Type: application/json
+
+{ "bl_ID": "11000000-0000-4000-8000-000000000003", "containerNumber": "OCLU1234567", "type_code": "20GP", "grossWeightKg": 10000 }
+
+### 4) Should FAIL: deep insert with one good and one bad container – nothing is saved
+POST {{cargo}}/Manifests
+Content-Type: application/json
+
+{
+  "manifestNumber": "EGM-2026-1103",
+  "call_ID": "d1000000-0000-4000-8000-000000000003",
+  "direction_code": "EXP",
+  "billsOfLading": [
+    {
+      "blNumber": "OCLINCOK2611006",
+      "cargoType_code": "CONT",
+      "description": "Coir products",
+      "grossWeightKg": 20000,
+      "containers": [
+        { "containerNumber": "BWSU3004006", "type_code": "40GP", "grossWeightKg": 10000 },
+        { "containerNumber": "BWSU3004012", "type_code": "40GP", "grossWeightKg": 10000 }
+      ]
+    }
+  ]
+}
+
+### 5) Should FAIL: PATCH an existing container to a wrong number
+PATCH {{cargo}}/Containers(21000000-0000-4000-8000-000000000001)
+Content-Type: application/json
+
+{ "containerNumber": "OCLU1234560" }
