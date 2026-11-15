@@ -2,6 +2,8 @@ import cds from '@sap/cds'
 import { isAfter } from './lib/validators.js'
 import { effectiveValues } from './lib/request-utils.js'
 
+import { nextNumber } from './lib/numbering.js'
+
 export default class OperationsService extends cds.ApplicationService {
   async init() {
     const { VesselCalls, BerthAllocations } = this.entities
@@ -27,6 +29,12 @@ export default class OperationsService extends cds.ApplicationService {
         req.error({ status: 400, message: 'ALLOCATION_END_NOT_AFTER_START', args: [1], target: 'toTime' })
     })
 
+    // ── Auto-number new vessel calls (overwrites anything the client sent) ──
+    this.before('CREATE', VesselCalls, async req => {
+      req.data.callNumber = await nextNumber('VC')
+    })
+
     return super.init()   // always last: lets CAP register its generic handlers
   }
 }
+

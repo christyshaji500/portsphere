@@ -1,0 +1,70 @@
+@ops = http://localhost:4004/operations
+@rel = http://localhost:4004/release
+
+### 1) Create a call WITHOUT callNumber → expect VC-2026-0005
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX09",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-25T08:00:00Z",
+  "etd": "2026-11-26T18:00:00Z"
+}
+
+### 2) Try to choose your own number → ignored, expect VC-2026-0006
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "callNumber": "VC-9999-9999",
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX10",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-12-01T08:00:00Z",
+  "etd": "2026-12-02T18:00:00Z"
+}
+
+### 3) A FAILED create must not use up a number (ETD before ETA → 400)
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX11",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-12-05T08:00:00Z",
+  "etd": "2026-12-04T18:00:00Z"
+}
+
+### 4) Next good create → expect VC-2026-0007 (NOT 0008 → no gap)
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX12",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-12-08T08:00:00Z",
+  "etd": "2026-12-09T18:00:00Z"
+}
+
+### 5) Gate pass number → expect GP-2026-0003
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "movement": "OUT",
+  "container_ID": "21000000-0000-4000-8000-000000000002",
+  "truckNumber": "KL07CD4321",
+  "validFrom": "2026-11-16T06:00:00Z",
+  "validTo": "2026-11-16T18:00:00Z"
+}
+
+### 6) Look at the counters
+GET http://localhost:4004/masterdata/NumberRanges

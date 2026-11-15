@@ -15,7 +15,7 @@ type GateMovement : String(3) enum {
 
 /** Generic official document (DO, gate pass, …) with PDF + signatures */
 entity Documents : cuid, managed {
-  documentNumber    : String(20)  @mandatory;
+  documentNumber    : String(20) ;
   type              : Association to DocumentTypes @mandatory;
   title             : String(120) @mandatory;
   status            : Association to DocumentStatuses default 'DRAFT';

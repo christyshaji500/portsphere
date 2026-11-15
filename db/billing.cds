@@ -19,7 +19,7 @@ entity Tariffs : cuid, managed, temporal {
 
 /** Bill for one vessel call */
 entity Invoices : cuid, managed {
-  invoiceNumber : String(20) @mandatory;
+  invoiceNumber : String(20);
   call          : Association to VesselCalls      @mandatory @assert.target;
   billTo        : Association to BusinessPartners @mandatory @assert.target;
   invoiceDate   : Date @mandatory;

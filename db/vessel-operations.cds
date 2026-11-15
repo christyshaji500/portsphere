@@ -6,7 +6,7 @@ using { portsphere.CallStatuses } from './codelists';
 
 /** One visit of one vessel to our port */
 entity VesselCalls : cuid, managed {
-  callNumber       : String(12) @mandatory;          // e.g. VC-2026-0001 (auto-numbered in Phase 2)
+  callNumber       : String(12) ;          // e.g. VC-2026-0001 (auto-numbered in Phase 2)
   vessel           : Association to Vessels          @mandatory @assert.target;
   voyageNumber     : String(10) @mandatory;          // shipping line's voyage code, e.g. 045E
   shippingLine     : Association to BusinessPartners @mandatory @assert.target;

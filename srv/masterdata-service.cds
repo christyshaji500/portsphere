@@ -1,5 +1,7 @@
 using { portsphere as ps } from '../db/master-data';
 using from '../db/billing';
+using from '../db/numbering';
+
 
 /** Port admin: reference data used by every other service */
 service MasterDataService @(path: '/masterdata') {
@@ -11,4 +13,6 @@ service MasterDataService @(path: '/masterdata') {
   @readonly entity VesselTypes  as projection on ps.VesselTypes;
   @readonly entity PartnerRoles as projection on ps.PartnerRoles;
   @readonly entity ChargeTypes  as projection on ps.ChargeTypes;
+
+  @readonly entity NumberRanges as projection on ps.NumberRanges;
 }
