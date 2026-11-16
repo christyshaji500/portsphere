@@ -87,6 +87,11 @@ export default class CargoService extends cds.ApplicationService {
       prepareNew(req.data.containers, await directionOfManifest(req.data.manifest_ID)))
     this.before('CREATE', Manifests, req =>
       req.data.billsOfLading?.forEach(bl => prepareNew(bl.containers, req.data.direction_code)))
+    
+    this.before(['CREATE', 'UPDATE'], CustomsDeclarations, async req => {
+      const p = await roleProblem(req.data.broker_ID, ['CHA'], 'broker_ID')
+      if (p) req.error({ status: 400, message: p[0], args: p[1], target: 'broker_ID' })
+    })
 
     // ── Cargo can only be handled while the vessel is WORKING ──
     const requireWorkingCall = async (req, container) => {

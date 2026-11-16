@@ -3,7 +3,11 @@ using { portsphere as ps } from '../db/documents';
 /** Shipping line + gate operator: cargo release and signed documents */
 service ReleaseService @(path: '/release') {
   entity DeliveryOrders as projection on ps.DeliveryOrders;
-  entity GatePasses     as projection on ps.GatePasses;
+  // entity GatePasses     as projection on ps.GatePasses;
+  entity GatePasses as projection on ps.GatePasses actions {
+    action gateIn()  returns GatePasses;
+    action gateOut() returns GatePasses;
+  };
   entity Documents      as projection on ps.Documents;
   entity Signatures     as projection on ps.Signatures;
 

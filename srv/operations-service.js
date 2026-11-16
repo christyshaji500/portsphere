@@ -6,6 +6,7 @@ import { checkAllocations, findClash } from './lib/berth-checks.js'
 import { fitProblems } from './lib/berth-rules.js'
 import { registerTransitions, protectFields } from './lib/transitions.js'
 import { CALL_FLOW } from './lib/state-machine.js'
+import { roleProblem } from './lib/partner-checks.js'
 
 const { SELECT, UPDATE } = cds.ql
 
@@ -76,6 +77,13 @@ export default class OperationsService extends cds.ApplicationService {
         })
       }
       return options.sort((x, y) => x.spareLengthMeters - y.spareLengthMeters)  // best fit first
+    })
+
+    this.before(['CREATE', 'UPDATE'], VesselCalls, async req => {
+      for (const [field, roles] of [['shippingLine_ID', ['SHIPPING_LINE']], ['agent_ID', ['AGENT']]]) {
+        const p = await roleProblem(req.data[field], roles, field)
+        if (p) req.error({ status: 400, message: p[0], args: p[1], target: field })
+      }
     })
 
      // status, ata, atd only through actions; new calls always start PLANNED

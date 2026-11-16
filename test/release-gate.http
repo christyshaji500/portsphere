@@ -1,0 +1,158 @@
+@rel = http://localhost:4004/release
+@cargo = http://localhost:4004/cargo
+@machinery = 21000000-0000-4000-8000-000000000001
+@passOut = 72000000-0000-4000-8000-000000000001
+@passIn = 72000000-0000-4000-8000-000000000002
+@exportBox = 22000000-0000-4000-8000-000000000001
+
+### 1) Should FAIL with 2 errors: DO for an EXPORT B/L, issued to a SHIPPER
+POST {{rel}}/DeliveryOrders
+Content-Type: application/json
+
+{
+  "bl_ID": "11000000-0000-4000-8000-000000000003",
+  "issuedBy_ID": "b1000000-0000-4000-8000-000000000001",
+  "issuedTo_ID": "b1000000-0000-4000-8000-000000000005",
+  "validUntil": "2026-11-30"
+}
+
+### 2) Should FAIL: machinery container – Bill of Entry only DUTY_PAID, not CLEARED
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "ID": "{{passOut}}",
+  "movement": "OUT",
+  "container_ID": "{{machinery}}",
+  "deliveryOrder_ID": "61000000-0000-4000-8000-000000000001",
+  "transporter_ID": "b1000000-0000-4000-8000-000000000007",
+  "truckNumber": "KL07AB1234",
+  "validFrom": "2026-11-15T00:00:00Z",
+  "validTo": "2026-11-19T00:00:00Z"
+}
+
+### 3) Customs clears the machinery Bill of Entry
+POST {{cargo}}/CustomsDeclarations(31000000-0000-4000-8000-000000000001)/CargoService.clear
+Content-Type: application/json
+
+{}
+
+### 4) Same gate pass → now SUCCEEDS (GP-2026-0003)
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "ID": "{{passOut}}",
+  "movement": "OUT",
+  "container_ID": "{{machinery}}",
+  "deliveryOrder_ID": "61000000-0000-4000-8000-000000000001",
+  "transporter_ID": "b1000000-0000-4000-8000-000000000007",
+  "truckNumber": "KL07AB1234",
+  "validFrom": "2026-11-15T00:00:00Z",
+  "validTo": "2026-11-19T00:00:00Z"
+}
+
+### 5) Should FAIL: a second open pass for the same container
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "movement": "OUT",
+  "container_ID": "{{machinery}}",
+  "deliveryOrder_ID": "61000000-0000-4000-8000-000000000001",
+  "truckNumber": "KL07ZZ9999",
+  "validFrom": "2026-11-15T00:00:00Z",
+  "validTo": "2026-11-19T00:00:00Z"
+}
+
+### 6) Should FAIL with 3 errors: paint container (HOLD, BOE not cleared, DO is for another B/L)
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "movement": "OUT",
+  "container_ID": "21000000-0000-4000-8000-000000000003",
+  "deliveryOrder_ID": "61000000-0000-4000-8000-000000000001",
+  "truckNumber": "KL07AB5555",
+  "validFrom": "2026-11-15T00:00:00Z",
+  "validTo": "2026-11-19T00:00:00Z"
+}
+
+### 7) Should FAIL: transporter is actually a CONSIGNEE
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "movement": "OUT",
+  "container_ID": "21000000-0000-4000-8000-000000000002",
+  "deliveryOrder_ID": "61000000-0000-4000-8000-000000000001",
+  "transporter_ID": "b1000000-0000-4000-8000-000000000006",
+  "truckNumber": "KL07AB6666",
+  "validFrom": "2026-11-15T00:00:00Z",
+  "validTo": "2026-11-19T00:00:00Z"
+}
+
+### 8) Should FAIL 409: gate-out before the truck has entered
+POST {{rel}}/GatePasses({{passOut}})/ReleaseService.gateOut
+Content-Type: application/json
+
+{}
+
+### 9) Truck enters → gateInAt set
+POST {{rel}}/GatePasses({{passOut}})/ReleaseService.gateIn
+Content-Type: application/json
+
+{}
+
+### 10) Truck leaves with the container → gateOutAt set, container GATED_OUT
+POST {{rel}}/GatePasses({{passOut}})/ReleaseService.gateOut
+Content-Type: application/json
+
+{}
+
+### 11) Check the container
+GET {{cargo}}/Containers({{machinery}})?$select=containerNumber,status_code,gatedOutAt
+
+### 12) Export: announce a container (starts EXPECTED)
+POST {{cargo}}/Manifests
+Content-Type: application/json
+
+{
+  "manifestNumber": "EGM-2026-1102",
+  "call_ID": "d1000000-0000-4000-8000-000000000002",
+  "direction_code": "EXP",
+  "billsOfLading": [{
+    "blNumber": "BWSINCOK2611005",
+    "shipper_ID": "b1000000-0000-4000-8000-000000000005",
+    "cargoType_code": "CONT",
+    "description": "Spices – black pepper",
+    "grossWeightKg": 15000,
+    "containers": [ { "ID": "{{exportBox}}", "containerNumber": "BWSU3004006", "type_code": "40GP", "grossWeightKg": 15000 } ]
+  }]
+}
+
+### 13) IN gate pass for it (GP-2026-0004)
+POST {{rel}}/GatePasses
+Content-Type: application/json
+
+{
+  "ID": "{{passIn}}",
+  "movement": "IN",
+  "container_ID": "{{exportBox}}",
+  "transporter_ID": "b1000000-0000-4000-8000-000000000007",
+  "truckNumber": "KL41C5678",
+  "validFrom": "2026-11-15T00:00:00Z",
+  "validTo": "2026-11-19T00:00:00Z"
+}
+
+### 14) Truck brings it in → container GATED_IN
+POST {{rel}}/GatePasses({{passIn}})/ReleaseService.gateIn
+Content-Type: application/json
+
+{}
+
+### 15) Should FAIL 409: gate-in a second time
+POST {{rel}}/GatePasses({{passIn}})/ReleaseService.gateIn
+Content-Type: application/json
+
+{}
