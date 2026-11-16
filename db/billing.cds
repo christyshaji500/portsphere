@@ -28,6 +28,7 @@ entity Invoices : cuid, managed {
   status        : Association to InvoiceStatuses default 'DRAFT';
   netAmount     : Decimal(15, 2) default 0;            // sum of items – recalculated by handler in Phase 2
   taxRate       : Decimal(5, 2)  default 18.00;        // GST %
+  cancelReason  : String(250);
 
   // calculated on read
   taxAmount     : Decimal(15, 2) = round(netAmount * taxRate / 100, 2);

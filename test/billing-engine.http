@@ -1,0 +1,146 @@
+@ops = http://localhost:4004/operations
+@bill = http://localhost:4004/billing
+@vc1 = d1000000-0000-4000-8000-000000000001
+@sept = d2000000-0000-4000-8000-000000000001
+@manual = 92000000-0000-4000-8000-000000000001
+
+### ── A) Rules 1 + 2 ──
+
+### 1) Should FAIL 409: VC-2026-0002 is PLANNED, not DEPARTED
+POST {{bill}}/VesselCalls(d1000000-0000-4000-8000-000000000002)/BillingService.generateInvoice
+Content-Type: application/json
+
+{}
+
+### 2) VC-2026-0001 (WORKING) completes …
+POST {{ops}}/VesselCalls({{vc1}})/OperationsService.complete
+Content-Type: application/json
+
+{}
+
+### 3) … and departs
+POST {{ops}}/VesselCalls({{vc1}})/OperationsService.depart
+Content-Type: application/json
+
+{}
+
+### 4) Should FAIL 409: it already has the draft INV-2026-0002
+POST {{bill}}/VesselCalls({{vc1}})/BillingService.generateInvoice
+Content-Type: application/json
+
+{}
+
+### 5) Cancel INV-2026-0002
+POST {{bill}}/Invoices(91000000-0000-4000-8000-000000000002)/BillingService.cancelInvoice
+Content-Type: application/json
+
+{ "reason": "Replaced by system-generated invoice" }
+
+### 6) Generate → INV-2026-0003 with the lines calculated from the operational data
+POST {{bill}}/VesselCalls({{vc1}})/BillingService.generateInvoice
+Content-Type: application/json
+
+{}
+
+### 7) Look at its lines
+GET {{bill}}/Invoices?$filter=invoiceNumber eq 'INV-2026-0003'&$select=invoiceNumber,status_code,netAmount,taxAmount,grossAmount,dueDate&$expand=items($select=lineNo,chargeType_code,description,quantity,unit,rate,amount)
+
+### ── B) Rule 3: a visit in SEPTEMBER is priced with the OLD tariff ──
+
+### 8) Create a call for KOCHI EXPRESS in September with a berth at B05
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "ID": "{{sept}}",
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX07",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-09-10T06:00:00Z",
+  "etd": "2026-09-11T08:00:00Z",
+  "berthAllocations": [
+    { "berth_ID": "a1000000-0000-4000-8000-000000000005", "fromTime": "2026-09-10T06:00:00Z", "toTime": "2026-09-11T08:00:00Z" }
+  ]
+}
+
+### 9) Arrived 10 Sep 06:00
+POST {{ops}}/VesselCalls({{sept}})/OperationsService.arrive
+Content-Type: application/json
+
+{ "ata": "2026-09-10T06:00:00Z" }
+
+### 10) Berth
+POST {{ops}}/VesselCalls({{sept}})/OperationsService.berth
+Content-Type: application/json
+
+{}
+
+### 11) Start work
+POST {{ops}}/VesselCalls({{sept}})/OperationsService.startWork
+Content-Type: application/json
+
+{}
+
+### 12) Complete
+POST {{ops}}/VesselCalls({{sept}})/OperationsService.complete
+Content-Type: application/json
+
+{}
+
+### 13) Departed 11 Sep 08:00
+POST {{ops}}/VesselCalls({{sept}})/OperationsService.depart
+Content-Type: application/json
+
+{ "atd": "2026-09-11T08:00:00Z" }
+
+### 14) Generate its invoice
+POST {{bill}}/VesselCalls({{sept}})/BillingService.generateInvoice
+Content-Type: application/json
+
+{}
+
+### 15) Check: port dues rate 25.00 (old tariff), berth hire 26 h
+GET {{bill}}/Invoices?$filter=call_ID eq {{sept}}&$select=invoiceNumber,netAmount,taxAmount,grossAmount&$expand=items($select=chargeType_code,quantity,rate,amount,tariff_ID)
+
+### ── C) Rules 4 + 5: draft-only edits and automatic netAmount ──
+
+### 16) Manual invoice with one item – the netAmount we send (1) is ignored
+POST {{bill}}/Invoices
+Content-Type: application/json
+
+{
+  "ID": "{{manual}}",
+  "call_ID": "d1000000-0000-4000-8000-000000000003",
+  "billTo_ID": "b1000000-0000-4000-8000-000000000001",
+  "invoiceDate": "2026-11-16",
+  "currency_code": "INR",
+  "netAmount": 1,
+  "items": [
+    { "ID": "02000000-0000-4000-8000-000000000001", "lineNo": 1, "chargeType_code": "GATE_FEE", "quantity": 2, "rate": 600 }
+  ]
+}
+
+### 17) Add an item → netAmount follows
+POST {{bill}}/InvoiceItems
+Content-Type: application/json
+
+{ "ID": "02000000-0000-4000-8000-000000000002", "invoice_ID": "{{manual}}", "lineNo": 2, "chargeType_code": "DOC_FEE", "quantity": 1, "rate": 350 }
+
+### 18) Delete the first item → netAmount follows
+DELETE {{bill}}/InvoiceItems(02000000-0000-4000-8000-000000000001)
+
+### 19) Check
+GET {{bill}}/Invoices({{manual}})?$select=invoiceNumber,netAmount,grossAmount
+
+### 20) Issue it → ISSUED, dueDate = invoiceDate + 14
+POST {{bill}}/Invoices({{manual}})/BillingService.issue
+Content-Type: application/json
+
+{}
+
+### 21) Should FAIL 409: change an item of an issued invoice
+PATCH {{bill}}/InvoiceItems(02000000-0000-4000-8000-000000000002)
+Content-Type: application/json
+
+{ "rate": 1 }

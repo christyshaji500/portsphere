@@ -33,3 +33,9 @@ export const CONTAINER_FLOW = {
   hold:      { from: ['DISCHARGED', 'GATED_IN'], to: 'HOLD' },        // customs block
   load:      { from: ['GATED_IN'],               to: 'LOADED' }       // export: yard → ship
 }
+
+export const INVOICE_FLOW = {
+  issue:         { from: ['DRAFT'],             to: 'ISSUED' },
+  markPaid:      { from: ['ISSUED', 'OVERDUE'], to: 'PAID' },
+  cancelInvoice: { from: ['DRAFT', 'ISSUED'],   to: 'CANCELLED' }
+}
