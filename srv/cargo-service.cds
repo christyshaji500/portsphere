@@ -4,7 +4,14 @@ using { portsphere as ps } from '../db/cargo';
 service CargoService @(path: '/cargo') {
   entity Manifests           as projection on ps.Manifests;
   entity BillsOfLading       as projection on ps.BillsOfLading;
-  entity Containers          as projection on ps.Containers;
+
+  // entity Containers          as projection on ps.Containers;
+  entity Containers as projection on ps.Containers actions {
+    action discharge(yardLocation : String(12)) returns Containers;
+    action hold(reason : String(250))           returns Containers;
+    action load()                               returns Containers;
+  };
+  
   // entity CustomsDeclarations as projection on ps.CustomsDeclarations;
   entity CustomsDeclarations as projection on ps.CustomsDeclarations actions {
     action file()                                                               returns CustomsDeclarations;

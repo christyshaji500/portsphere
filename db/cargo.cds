@@ -50,6 +50,7 @@ entity Containers : cuid, managed {
   grossWeightKg   : Decimal(10, 2) @mandatory @assert.range: [0.01, 99999];
   status          : Association to ContainerStatuses default 'ON_VESSEL';
   yardLocation    : String(12);   // block-row-bay-tier, e.g. A-03-02-1
+  holdReason      : String(250);  // why customs blocked it
   dischargedAt    : Timestamp;
   gatedOutAt      : Timestamp;
 

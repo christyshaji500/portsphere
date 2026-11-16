@@ -37,9 +37,9 @@ export function registerTransitions(srv, entity, dbEntity, flow, hooks = {}) {
  *         CHANGED values are rejected.
  */
 export function protectFields(srv, entity, { fields, initial = {} }) {
-  srv.before('CREATE', entity, req => {
+  srv.before('CREATE', entity, async req => {
     for (const f of fields) delete req.data[f]
-    Object.assign(req.data, initial)
+    Object.assign(req.data, typeof initial === 'function' ? await initial(req) : initial)
   })
   srv.before('UPDATE', entity, async req => {
     const sent = fields.filter(f => f in req.data)

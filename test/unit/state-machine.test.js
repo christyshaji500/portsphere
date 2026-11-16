@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { CALL_FLOW, DECLARATION_FLOW, transitionError, allowedActions } from '../../srv/lib/state-machine.js'
+import { CALL_FLOW, DECLARATION_FLOW, transitionError, allowedActions ,CONTAINER_FLOW} from '../../srv/lib/state-machine.js'
 
 test('allowed transition returns null', () => {
   assert.equal(transitionError(CALL_FLOW, 'arrive', 'PLANNED'), null)
@@ -16,4 +16,9 @@ test('allowedActions per status', () => {
   assert.deepEqual(allowedActions(CALL_FLOW, 'PLANNED'), ['arrive', 'cancel'])
   assert.deepEqual(allowedActions(CALL_FLOW, 'DEPARTED'), [])
   assert.deepEqual(allowedActions(DECLARATION_FLOW, 'ASSESSED'), ['payDuty', 'clear', 'rejectDeclaration'])
+})
+
+test('container flow', () => {
+  assert.deepEqual(allowedActions(CONTAINER_FLOW, 'GATED_IN'), ['hold', 'load'])
+  assert.equal(transitionError(CONTAINER_FLOW, 'discharge', 'EXPECTED')[0], 'INVALID_TRANSITION')
 })

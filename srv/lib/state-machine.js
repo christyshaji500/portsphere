@@ -27,3 +27,9 @@ export function transitionError(flow, action, status) {
 /** Which actions are possible in this status – Fiori will use this to enable/disable buttons */
 export const allowedActions = (flow, status) =>
   Object.keys(flow).filter(action => flow[action].from.includes(status))
+
+export const CONTAINER_FLOW = {
+  discharge: { from: ['ON_VESSEL'],             to: 'DISCHARGED' },  // import: ship → yard
+  hold:      { from: ['DISCHARGED', 'GATED_IN'], to: 'HOLD' },        // customs block
+  load:      { from: ['GATED_IN'],               to: 'LOADED' }       // export: yard → ship
+}

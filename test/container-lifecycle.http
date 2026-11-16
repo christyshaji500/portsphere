@@ -1,0 +1,78 @@
+@ops = http://localhost:4004/operations
+@cargo = http://localhost:4004/cargo
+@vc2 = d1000000-0000-4000-8000-000000000002
+@reefer = 21000000-0000-4000-8000-000000000005
+
+### 1) Should FAIL 409: discharge a reefer of VC-2026-0002 while the call is still PLANNED
+POST {{cargo}}/Containers({{reefer}})/CargoService.discharge
+Content-Type: application/json
+
+{ "yardLocation": "R-01-01-1" }
+
+### 2–4) Bring VC-2026-0002 to WORKING
+POST {{ops}}/VesselCalls({{vc2}})/OperationsService.arrive
+Content-Type: application/json
+
+{}
+
+###
+POST {{ops}}/VesselCalls({{vc2}})/OperationsService.berth
+Content-Type: application/json
+
+{}
+
+###
+POST {{ops}}/VesselCalls({{vc2}})/OperationsService.startWork
+Content-Type: application/json
+
+{}
+
+### 5) Discharge now works → DISCHARGED, dischargedAt + yardLocation set
+POST {{cargo}}/Containers({{reefer}})/CargoService.discharge
+Content-Type: application/json
+
+{ "yardLocation": "R-01-01-1" }
+
+### 6) Should FAIL 400: hold without reason
+POST {{cargo}}/Containers({{reefer}})/CargoService.hold
+Content-Type: application/json
+
+{}
+
+### 7) Customs hold → HOLD
+POST {{cargo}}/Containers({{reefer}})/CargoService.hold
+Content-Type: application/json
+
+{ "reason": "Temperature log missing – FSSAI inspection" }
+
+### 8) Should FAIL 400: change container status directly
+PATCH {{cargo}}/Containers({{reefer}})
+Content-Type: application/json
+
+{ "status_code": "GATED_OUT" }
+
+### 9) Load the export rice container (GATED_IN, SB cleared, VC-2026-0001 WORKING) → LOADED
+POST {{cargo}}/Containers(21000000-0000-4000-8000-000000000004)/CargoService.load
+Content-Type: application/json
+
+{}
+
+### 10) New export manifest → its container starts as EXPECTED (not ON_VESSEL)
+POST {{cargo}}/Manifests
+Content-Type: application/json
+
+{
+  "manifestNumber": "EGM-2026-1102",
+  "call_ID": "{{vc2}}",
+  "direction_code": "EXP",
+  "billsOfLading": [{
+    "blNumber": "BWSINCOK2611005",
+    "shipper_ID": "b1000000-0000-4000-8000-000000000005",
+    "cargoType_code": "CONT",
+    "description": "Spices – black pepper",
+    "grossWeightKg": 15000,
+    "containers": [
+      { "containerNumber": "BWSU3004006", "type_code": "40GP", "grossWeightKg": 15000, "status_code": "LOADED" }
+    ]
+  }]
+}

@@ -5,3 +5,4 @@ HOLD;Customs Hold;Blocked by customs;1
 GATED_OUT;Gated Out;Left the terminal;0
 GATED_IN;In Yard (Export);Received at gate for export;3
 LOADED;Loaded;Loaded on outgoing vessel;0
+EXPECTED;Expected at Gate;Export container announced, not yet received;0
