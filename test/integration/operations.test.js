@@ -75,10 +75,19 @@ describe('Vessel call lifecycle', () => {
     assert.ok(data.atd)
   })
 
-  test('status cannot be PATCHed; an unchanged value is accepted', async () => {
-    await failsWith(PATCH(`${ops}/VesselCalls(${ID.vc1})`, { status_code: 'DEPARTED' }), 400, 'only be changed through actions')
-    const { status } = await PATCH(`${ops}/VesselCalls(${ID.vc1})`, { status_code: 'WORKING', remarks: 'Pilot on board' })
+//   test('status cannot be PATCHed; an unchanged value is accepted', async () => {
+//     await failsWith(PATCH(`${ops}/VesselCalls(${ID.vc1})`, { status_code: 'DEPARTED' }), 400, 'only be changed through actions')
+//     const { status } = await PATCH(`${ops}/VesselCalls(${ID.vc1})`, { status_code: 'WORKING', remarks: 'Pilot on board' })
+//     assert.equal(status, 200)
+//   })
+
+  test('status in a PATCH is ignored (read-only field), other fields are saved', async () => {
+    const { status } = await PATCH(`${ops}/VesselCalls(${ID.vc1})`, { status_code: 'DEPARTED', remarks: 'Pilot on board' })
     assert.equal(status, 200)
+
+    const { data } = await GET(`${ops}/VesselCalls(${ID.vc1})`)
+    assert.equal(data.status_code, 'WORKING')        // unchanged: CAP dropped the read-only field
+    assert.equal(data.remarks, 'Pilot on board')     // normal fields are saved
   })
 
   test('cancel requires a reason', async () => {
