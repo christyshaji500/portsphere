@@ -2,11 +2,18 @@ using { portsphere as ps } from '../db/vessel-operations';
 
 /** Ship agent + berth planner: vessel calls and berth planning */
 service OperationsService @(path: '/operations') {
-  
+
   // entity VesselCalls      as projection on ps.VesselCalls;
   entity VesselCalls as projection on ps.VesselCalls actions {
     /** Free berths that fit this call's vessel during ETA–ETD, best fit first */
     function availableBerths() returns many BerthOption;
+
+    action arrive(ata : Timestamp)       returns VesselCalls;
+    action berth()                       returns VesselCalls;
+    action startWork()                   returns VesselCalls;
+    action complete()                    returns VesselCalls;
+    action depart(atd : Timestamp)       returns VesselCalls;
+    action cancel(reason : String(250))  returns VesselCalls;
   };
 
   type BerthOption {

@@ -5,7 +5,14 @@ service CargoService @(path: '/cargo') {
   entity Manifests           as projection on ps.Manifests;
   entity BillsOfLading       as projection on ps.BillsOfLading;
   entity Containers          as projection on ps.Containers;
-  entity CustomsDeclarations as projection on ps.CustomsDeclarations;
+  // entity CustomsDeclarations as projection on ps.CustomsDeclarations;
+  entity CustomsDeclarations as projection on ps.CustomsDeclarations actions {
+    action file()                                                               returns CustomsDeclarations;
+    action assess(assessableValue : Decimal(15, 2), dutyAmount : Decimal(15, 2)) returns CustomsDeclarations;
+    action payDuty()                                                            returns CustomsDeclarations;
+    action clear(remarks : String(500))                                         returns CustomsDeclarations;
+    action rejectDeclaration(reason : String(250))                              returns CustomsDeclarations;
+  };
 
   @readonly entity VesselCalls         as projection on ps.VesselCalls;
   @readonly entity BusinessPartners    as projection on ps.BusinessPartners;

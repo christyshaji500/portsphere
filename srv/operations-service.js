@@ -1,16 +1,19 @@
 import cds from '@sap/cds'
 import { isAfter } from './lib/validators.js'
 import { effectiveValues } from './lib/request-utils.js'
-
 import { nextNumber } from './lib/numbering.js'
-
 import { checkAllocations, findClash } from './lib/berth-checks.js'
 import { fitProblems } from './lib/berth-rules.js'
-const { SELECT } = cds.ql
+import { registerTransitions, protectFields } from './lib/transitions.js'
+import { CALL_FLOW } from './lib/state-machine.js'
+
+const { SELECT, UPDATE } = cds.ql
 
 export default class OperationsService extends cds.ApplicationService {
   async init() {
     const { VesselCalls, BerthAllocations } = this.entities
+    const db = cds.entities('portsphere')
+    const now = () => new Date().toISOString()
 
     // ── Vessel calls: ETD must be after ETA (create AND partial update) ──
     this.before(['CREATE', 'UPDATE'], VesselCalls, async req => {
@@ -73,6 +76,36 @@ export default class OperationsService extends cds.ApplicationService {
         })
       }
       return options.sort((x, y) => x.spareLengthMeters - y.spareLengthMeters)  // best fit first
+    })
+
+     // status, ata, atd only through actions; new calls always start PLANNED
+    protectFields(this, VesselCalls, { fields: ['status_code', 'ata', 'atd'], initial: { status_code: 'PLANNED' } })
+
+    registerTransitions(this, VesselCalls, db.VesselCalls, CALL_FLOW, {
+      before: {
+        arrive: req => ({ ata: req.data.ata ?? now() }),
+
+        berth: async (req, call) => {
+          const alloc = await SELECT.one.from(db.BerthAllocations).columns('ID').where({ call_ID: call.ID })
+          if (!alloc) req.reject(409, 'BERTH_REQUIRED', [call.callNumber])
+        },
+
+        depart: (req, call) => {
+          const atd = req.data.atd ?? now()
+          if (call.ata && !isAfter(atd, call.ata)) req.reject(400, 'ATD_NOT_AFTER_ATA')
+          return { atd }
+        },
+
+        cancel: (req, call) => {
+          const reason = req.data.reason?.trim()
+          if (!reason) req.reject(400, 'REASON_REQUIRED')
+          return { remarks: [call.remarks, `Cancelled: ${reason}`].filter(Boolean).join(' | ').slice(0, 500) }
+        }
+      },
+      after: {
+        berth: (req, call) =>
+          UPDATE(db.BerthAllocations).with({ isConfirmed: true }).where({ call_ID: call.ID })
+      }
     })
 
     return super.init()   // always last: lets CAP register its generic handlers

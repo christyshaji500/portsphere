@@ -1,0 +1,95 @@
+@ops = http://localhost:4004/operations
+@cargo = http://localhost:4004/cargo
+@vc2 = d1000000-0000-4000-8000-000000000002
+@vc1 = d1000000-0000-4000-8000-000000000001
+@vc3 = d1000000-0000-4000-8000-000000000003
+
+### 1) VC-2026-0002 (PLANNED) arrives → ARRIVED, ata = now
+POST {{ops}}/VesselCalls({{vc2}})/OperationsService.arrive
+Content-Type: application/json
+
+{}
+
+### 2) Should FAIL 409: startWork from ARRIVED (must berth first)
+POST {{ops}}/VesselCalls({{vc2}})/OperationsService.startWork
+Content-Type: application/json
+
+{}
+
+### 3) Berth → BERTHED, and its B01 allocation becomes isConfirmed = true
+POST {{ops}}/VesselCalls({{vc2}})/OperationsService.berth
+Content-Type: application/json
+
+{}
+
+### 4) Check the confirmed allocation
+GET {{ops}}/VesselCalls({{vc2}})?$select=callNumber,status_code,ata&$expand=berthAllocations($select=isConfirmed)
+
+### 5) Should FAIL 400: change the status directly
+PATCH {{ops}}/VesselCalls({{vc2}})
+Content-Type: application/json
+
+{ "status_code": "DEPARTED" }
+
+### 6) Should SUCCEED: same status sent along with a real change (what Fiori does)
+PATCH {{ops}}/VesselCalls({{vc2}})
+Content-Type: application/json
+
+{ "status_code": "BERTHED", "remarks": "Pilot on board 05:40" }
+
+### 7) VC-2026-0001 (WORKING) completes
+POST {{ops}}/VesselCalls({{vc1}})/OperationsService.complete
+Content-Type: application/json
+
+{}
+
+### 8) Should FAIL 400: departure before its arrival (ata = 11 Nov 04:30)
+POST {{ops}}/VesselCalls({{vc1}})/OperationsService.depart
+Content-Type: application/json
+
+{ "atd": "2026-11-10T00:00:00Z" }
+
+### 9) Departs now → DEPARTED
+POST {{ops}}/VesselCalls({{vc1}})/OperationsService.depart
+Content-Type: application/json
+
+{}
+
+### 10) Should FAIL 400: cancel without a reason
+POST {{ops}}/VesselCalls({{vc3}})/OperationsService.cancel
+Content-Type: application/json
+
+{}
+
+### 11) Cancel VC-2026-0003 with a reason → CANCELLED, B03 becomes free
+POST {{ops}}/VesselCalls({{vc3}})/OperationsService.cancel
+Content-Type: application/json
+
+{ "reason": "Charterer changed discharge port" }
+
+### 12) Paint declaration (ASSESSED, duty 176400 unpaid): clear should FAIL 409
+POST {{cargo}}/CustomsDeclarations(31000000-0000-4000-8000-000000000002)/CargoService.clear
+Content-Type: application/json
+
+{}
+
+### 13) Pay the duty → DUTY_PAID
+POST {{cargo}}/CustomsDeclarations(31000000-0000-4000-8000-000000000002)/CargoService.payDuty
+Content-Type: application/json
+
+{}
+
+### 14) Clear → CLEARED + container OCLU1002001 released from HOLD (see the sap-messages response header)
+POST {{cargo}}/CustomsDeclarations(31000000-0000-4000-8000-000000000002)/CargoService.clear
+Content-Type: application/json
+
+{ "remarks": "MSDS received and verified" }
+
+### 15) The paint container is back in the yard
+GET {{cargo}}/Containers(21000000-0000-4000-8000-000000000003)?$select=containerNumber,status_code
+
+### 16) Should FAIL 409: file an already CLEARED shipping bill
+POST {{cargo}}/CustomsDeclarations(31000000-0000-4000-8000-000000000003)/CargoService.file
+Content-Type: application/json
+
+{}
