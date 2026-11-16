@@ -2,6 +2,7 @@ import cds from '@sap/cds'
 import { containerCheckDigit } from './lib/validators.js'
 import { registerTransitions, protectFields } from './lib/transitions.js'
 import { DECLARATION_FLOW, CONTAINER_FLOW  } from './lib/state-machine.js'
+import { roleProblem } from './lib/partner-checks.js'
 const { SELECT, UPDATE } = cds.ql
 
 /** Reports every container in the list whose check digit is wrong */

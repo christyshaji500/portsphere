@@ -53,7 +53,7 @@ entity Signatures : cuid, managed {
 
 /** Shipping line authorises the consignee to collect import cargo */
 entity DeliveryOrders : cuid, managed {
-  doNumber    : String(20) @mandatory;
+  doNumber    : String(20);
   bl          : Association to BillsOfLading    @mandatory @assert.target;
   issuedBy    : Association to BusinessPartners @mandatory @assert.target;  // shipping line / agent
   issuedTo    : Association to BusinessPartners @mandatory @assert.target;  // consignee or its CHA
@@ -66,7 +66,7 @@ annotate DeliveryOrders with @assert.unique: { number: [doNumber] };
 
 /** Permission for one truck to move one container in or out of the terminal */
 entity GatePasses : cuid, managed {
-  passNumber    : String(20)   @mandatory;
+  passNumber    : String(20)  ;
   movement      : GateMovement @mandatory @assert.range;   // only IN or OUT allowed
   container     : Association to Containers       @mandatory @assert.target;
   deliveryOrder : Association to DeliveryOrders   @assert.target;   // needed for import OUT (rule in Phase 2)
