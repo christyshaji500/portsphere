@@ -1,0 +1,82 @@
+@ops = http://localhost:4004/operations
+
+### 1) Should FAIL with TWO errors: ARABIAN SPIRIT (250 m / 15.2 m) at B05 (180 m / 10 m)
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000004",
+  "voyageNumber": "AS20",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000001",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-20T02:00:00Z",
+  "etd": "2026-11-21T14:00:00Z",
+  "berthAllocations": [
+    { "berth_ID": "a1000000-0000-4000-8000-000000000005", "fromTime": "2026-11-20T02:00:00Z", "toTime": "2026-11-21T14:00:00Z" }
+  ]
+}
+
+### 2) Should FAIL: KOCHI EXPRESS at B01 while BLUEWAVE HORIZON (VC-2026-0002) is there
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX20",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-16T00:00:00Z",
+  "etd": "2026-11-16T12:00:00Z",
+  "berthAllocations": [
+    { "berth_ID": "a1000000-0000-4000-8000-000000000001", "fromTime": "2026-11-16T00:00:00Z", "toTime": "2026-11-16T12:00:00Z" }
+  ]
+}
+
+### 3) Should SUCCEED: same ship at B02 on 20 Nov (fits, free)
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX21",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-20T00:00:00Z",
+  "etd": "2026-11-20T18:00:00Z",
+  "berthAllocations": [
+    { "berth_ID": "a1000000-0000-4000-8000-000000000002", "fromTime": "2026-11-20T00:00:00Z", "toTime": "2026-11-20T18:00:00Z" }
+  ]
+}
+
+### 4) Should SUCCEED (boundary): B01 starting EXACTLY when VC-2026-0002 leaves (16 Nov 22:00)
+POST {{ops}}/VesselCalls
+Content-Type: application/json
+
+{
+  "vessel_ID": "c1000000-0000-4000-8000-000000000005",
+  "voyageNumber": "KX22",
+  "shippingLine_ID": "b1000000-0000-4000-8000-000000000002",
+  "agent_ID": "b1000000-0000-4000-8000-000000000003",
+  "eta": "2026-11-16T22:00:00Z",
+  "etd": "2026-11-17T10:00:00Z",
+  "berthAllocations": [
+    { "berth_ID": "a1000000-0000-4000-8000-000000000001", "fromTime": "2026-11-16T22:00:00Z", "toTime": "2026-11-17T10:00:00Z" }
+  ]
+}
+
+### 5) Should FAIL: standalone allocation – MALABAR STAR's call (VC-2026-0003) onto B01 during VC-2026-0002
+POST {{ops}}/BerthAllocations
+Content-Type: application/json
+
+{
+  "call_ID": "d1000000-0000-4000-8000-000000000003",
+  "berth_ID": "a1000000-0000-4000-8000-000000000001",
+  "fromTime": "2026-11-16T10:00:00Z",
+  "toTime": "2026-11-16T20:00:00Z"
+}
+
+### 6) Suggest berths for MALABAR STAR (225 m / 12.8 m, 14–17 Nov)
+GET {{ops}}/VesselCalls(d1000000-0000-4000-8000-000000000003)/OperationsService.availableBerths()
+
+### 7) Suggest berths for BLUEWAVE HORIZON (366 m / 15.5 m)
+GET {{ops}}/VesselCalls(d1000000-0000-4000-8000-000000000002)/OperationsService.availableBerths()
