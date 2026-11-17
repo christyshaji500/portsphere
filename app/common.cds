@@ -139,3 +139,30 @@ annotate ps.GatePasses with {
   gateInAt      @title: 'Gate In';
   gateOutAt     @title: 'Gate Out';
 }
+
+// ── Billing (3.3d) ─────────────────────────────────────────
+annotate ps.Invoices with {
+  invoiceNumber @title: 'Invoice No.';
+  call          @title: 'Vessel Call' @Common.Text: call.callNumber @Common.TextArrangement: #TextOnly;
+  billTo        @title: 'Bill To'     @Common.Text: billTo.name     @Common.TextArrangement: #TextOnly;
+  invoiceDate   @title: 'Invoice Date';
+  dueDate       @title: 'Due Date';
+  status        @title: 'Status'      @Common.Text: status.name     @Common.TextArrangement: #TextOnly
+                @Common.ValueListWithFixedValues;
+  netAmount     @title: 'Net Amount'   @Measures.ISOCurrency: currency_code;
+  taxRate       @title: 'GST %';
+  taxAmount     @title: 'GST'          @Measures.ISOCurrency: currency_code;
+  grossAmount   @title: 'Gross Amount' @Measures.ISOCurrency: currency_code;
+  cancelReason  @title: 'Cancellation Reason';
+}
+
+annotate ps.InvoiceItems with {
+  lineNo      @title: 'Line';
+  chargeType  @title: 'Charge' @Common.Text: chargeType.name @Common.TextArrangement: #TextOnly
+              @Common.ValueListWithFixedValues;
+  description @title: 'Description';
+  quantity    @title: 'Quantity' @Measures.Unit: unit;
+  unit        @title: 'Unit';
+  rate        @title: 'Rate';
+  amount      @title: 'Amount';
+}

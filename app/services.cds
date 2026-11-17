@@ -8,3 +8,5 @@ using from './customsclearance/annotations';
 using from './gatepasses/annotations';
 
 using from './deliveryorders/annotations';
+
+using from './portbilling/annotations';

@@ -1,0 +1,183 @@
+{
+  "_version": "1.90.0",
+  "sap.app": {
+    "id": "portsphere.portbilling",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.34.0",
+      "toolsId": "9bef7e9a-6c1d-4293-914d-88562505f011"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/billing/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "PortBilling-manage": {
+          "semanticObject": "PortBilling",
+          "action": "manage",
+          "title": "{{PortBilling-manage.flpTitle}}",
+          "subTitle": "{{PortBilling-manage.flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.154.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "portsphere.portbilling.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "VesselCallsList",
+          "target": "VesselCallsList"
+        },
+        {
+          "pattern": "VesselCalls({key}):?query:",
+          "name": "VesselCallsObjectPage",
+          "target": "VesselCallsObjectPage"
+        },
+        {
+          "pattern": "VesselCalls({key})/invoices({key2}):?query:",
+          "name": "InvoicesObjectPage",
+          "target": "InvoicesObjectPage"
+        }
+      ],
+      "targets": {
+        "VesselCallsList": {
+          "type": "Component",
+          "id": "VesselCallsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/VesselCalls",
+              "variantManagement": "Page",
+              "navigation": {
+                "VesselCalls": {
+                  "detail": {
+                    "route": "VesselCallsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "VesselCallsObjectPage": {
+          "type": "Component",
+          "id": "VesselCallsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/VesselCalls",
+              "navigation": {
+                "invoices": {
+                  "detail": {
+                    "route": "InvoicesObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "InvoicesObjectPage": {
+          "type": "Component",
+          "id": "InvoicesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/VesselCalls/invoices"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  }
+}
