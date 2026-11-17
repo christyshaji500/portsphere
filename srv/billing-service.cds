@@ -15,6 +15,7 @@ service BillingService @(path: '/billing') {
   @readonly entity VesselCalls as projection on ps.VesselCalls actions {
     action generateInvoice() returns Invoices;
   };
+  @readonly entity Vessels          as projection on ps.Vessels;          // ← NEW
   @readonly entity BusinessPartners as projection on ps.BusinessPartners;
   @readonly entity ChargeTypes      as projection on ps.ChargeTypes;
   @readonly entity InvoiceStatuses  as projection on ps.InvoiceStatuses;

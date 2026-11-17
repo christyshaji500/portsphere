@@ -128,7 +128,11 @@
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
-                    "type": "ResponsiveTable"
+                    "type": "ResponsiveTable",
+                    "creationMode": {
+                      "name": "CreationDialog",
+                      "creationFields": "movement,container_ID,deliveryOrder_ID,transporter_ID,truckNumber,driverName,validFrom,validTo"
+                    }
                   }
                 }
               }
