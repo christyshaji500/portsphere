@@ -1,0 +1,1 @@
+using CargoService as service from '../../srv/cargo-service';

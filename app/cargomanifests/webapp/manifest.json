@@ -1,0 +1,184 @@
+{
+  "_version": "1.90.0",
+  "sap.app": {
+    "id": "portsphere.cargomanifests",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.34.0",
+      "toolsId": "0c653fae-d0bc-401e-8033-2ddae250c2e6"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/cargo/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "CargoManifest-manage": {
+          "semanticObject": "CargoManifest",
+          "action": "manage",
+          "title": "{{CargoManifest-manage.flpTitle}}",
+          "subTitle": "{{CargoManifest-manage.flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.154.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "portsphere.cargomanifests.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ManifestsList",
+          "target": "ManifestsList"
+        },
+        {
+          "pattern": "Manifests({key}):?query:",
+          "name": "ManifestsObjectPage",
+          "target": "ManifestsObjectPage"
+        },
+        {
+          "pattern": "Manifests({key})/billsOfLading({key2}):?query:",
+          "name": "BillsOfLadingObjectPage",
+          "target": "BillsOfLadingObjectPage"
+        }
+      ],
+      "targets": {
+        "ManifestsList": {
+          "type": "Component",
+          "id": "ManifestsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Manifests",
+              "variantManagement": "Page",
+              "initialLoad": "Enabled",
+              "navigation": {
+                "Manifests": {
+                  "detail": {
+                    "route": "ManifestsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ManifestsObjectPage": {
+          "type": "Component",
+          "id": "ManifestsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Manifests",
+              "navigation": {
+                "billsOfLading": {
+                  "detail": {
+                    "route": "BillsOfLadingObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "BillsOfLadingObjectPage": {
+          "type": "Component",
+          "id": "BillsOfLadingObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Manifests/billsOfLading"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  }
+}

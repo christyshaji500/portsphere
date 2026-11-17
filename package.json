@@ -15,13 +15,17 @@
     "start": "cds-serve",
     "test": "CDS_PLUGIN_UI5_ACTIVE=false node --test test/unit/*.test.js test/integration/*.test.js",
     "test:unit": "node --test test/unit/*.test.js",
-    "watch-vesselcalls": "cds watch --open portsphere.vesselcalls/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-vesselcalls": "cds watch --open portsphere.vesselcalls/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-cargomanifests": "cds watch --open portsphere.cargomanifests/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-customsclearance": "cds watch --open portsphere.customsclearance/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "workspaces": [
     "app/*"
   ],
   "sapux": [
-    "app/vesselcalls"
+    "app/vesselcalls",
+    "app/cargomanifests",
+    "app/customsclearance"
   ]
 }
