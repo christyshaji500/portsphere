@@ -1,0 +1,1 @@
+using ReleaseService as service from '../../srv/release-service';

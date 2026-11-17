@@ -1,4 +1,4 @@
-using { portsphere as ps } from '../db/cargo';     // ← CHANGED in 3.3a (was '../db/vessel-operations')
+using { portsphere as ps } from '../db/billing';     // ← CHANGED in 3.3c
 
 // ── Value helps ─────────────────────────────────────────────
 annotate ps.Vessels          with @cds.odata.valuelist @UI.Identification: [{ Value: name }];
@@ -110,4 +110,32 @@ annotate ps.CustomsDeclarations with {
   bl              @title: 'B/L' @Common.Text: bl.blNumber @Common.TextArrangement: #TextOnly;
   assessableValue @Measures.ISOCurrency: currency_code;
   dutyAmount      @Measures.ISOCurrency: currency_code;
+}
+
+// ── Release (3.3c) ─────────────────────────────────────────
+annotate ps.Containers     with @cds.odata.valuelist @UI.Identification: [{ Value: containerNumber }];
+annotate ps.DeliveryOrders with @cds.odata.valuelist @UI.Identification: [{ Value: doNumber }];
+
+annotate ps.DeliveryOrders with {
+  doNumber    @title: 'DO No.';
+  bl          @title: 'B/L'        @Common.Text: bl.blNumber    @Common.TextArrangement: #TextOnly;
+  issuedBy    @title: 'Issued By'  @Common.Text: issuedBy.name  @Common.TextArrangement: #TextOnly;
+  issuedTo    @title: 'Issued To'  @Common.Text: issuedTo.name  @Common.TextArrangement: #TextOnly;
+  validUntil  @title: 'Valid Until';
+  freightPaid @title: 'Freight Paid';
+  remarks     @title: 'Remarks';
+}
+
+annotate ps.GatePasses with {
+  passNumber    @title: 'Pass No.';
+  movement      @title: 'Movement (IN / OUT)';
+  container     @title: 'Container'      @Common.Text: container.containerNumber @Common.TextArrangement: #TextOnly;
+  deliveryOrder @title: 'Delivery Order' @Common.Text: deliveryOrder.doNumber    @Common.TextArrangement: #TextOnly;
+  transporter   @title: 'Transporter'    @Common.Text: transporter.name          @Common.TextArrangement: #TextOnly;
+  truckNumber   @title: 'Truck No.';
+  driverName    @title: 'Driver';
+  validFrom     @title: 'Valid From';
+  validTo       @title: 'Valid To';
+  gateInAt      @title: 'Gate In';
+  gateOutAt     @title: 'Gate Out';
 }

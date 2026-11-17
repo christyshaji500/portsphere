@@ -17,7 +17,9 @@
     "test:unit": "node --test test/unit/*.test.js",
     "watch-vesselcalls": "cds watch --open portsphere.vesselcalls/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-cargomanifests": "cds watch --open portsphere.cargomanifests/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-customsclearance": "cds watch --open portsphere.customsclearance/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-customsclearance": "cds watch --open portsphere.customsclearance/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-gatepasses": "cds watch --open portsphere.gatepasses/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-deliveryorders": "cds watch --open portsphere.deliveryorders/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "workspaces": [
@@ -26,6 +28,8 @@
   "sapux": [
     "app/vesselcalls",
     "app/cargomanifests",
-    "app/customsclearance"
+    "app/customsclearance",
+    "app/gatepasses",
+    "app/deliveryorders"
   ]
 }
