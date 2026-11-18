@@ -13,6 +13,7 @@ service CargoService @(path: '/cargo') {
   };
   
   // entity CustomsDeclarations as projection on ps.CustomsDeclarations;
+  @odata.draft.enabled
   entity CustomsDeclarations as projection on ps.CustomsDeclarations actions {
     action file()                                                               returns CustomsDeclarations;
     action assess(assessableValue : Decimal(15, 2), dutyAmount : Decimal(15, 2)) returns CustomsDeclarations;

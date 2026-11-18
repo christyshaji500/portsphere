@@ -48,3 +48,27 @@ export const newCall = (overrides = {}) => ({
   eta: daysFromNow(10), etd: daysFromNow(11),
   ...overrides
 })
+
+/** Keys of a draft-enabled entity */
+export const active = id => `ID=${id},IsActiveEntity=true`
+export const draft  = id => `ID=${id},IsActiveEntity=false`
+
+/**
+ * What Fiori does for a draft-enabled entity:
+ *  create = POST (new draft) + draftActivate                    → "Create … Save"
+ *  edit   = draftEdit + PATCH (draft) + draftActivate           → "Edit … Save"
+ * Our business rules run at draftActivate, so errors surface there.
+ */
+export function draftFlow({ POST, PATCH }, srvPath, srvName) {
+  return {
+    create: async (entity, body) => {
+      const { data } = await POST(`${srvPath}/${entity}`, body)
+      return POST(`${srvPath}/${entity}(${draft(data.ID)})/${srvName}.draftActivate`, {})
+    },
+    edit: async (entity, id, changes) => {
+      await POST(`${srvPath}/${entity}(${active(id)})/${srvName}.draftEdit`, { PreserveChanges: true })
+      await PATCH(`${srvPath}/${entity}(${draft(id)})`, changes)
+      return POST(`${srvPath}/${entity}(${draft(id)})/${srvName}.draftActivate`, {})
+    }
+  }
+}

@@ -2,9 +2,10 @@ import { describe, test } from 'node:test'
 import assert from 'node:assert/strict'
 import path from 'node:path'
 import cds from '@sap/cds'
-import { ID, failsWith } from './helpers.js'
+import { ID, failsWith, active, draftFlow } from './helpers.js'
 
 const { GET, POST, PATCH } = cds.test(path.join(import.meta.dirname, '../..'))
+const cargoDraft = draftFlow({ POST, PATCH }, '/cargo', 'CargoService')
 const cargo = '/cargo'
 
 describe('Check digits', () => {
@@ -30,9 +31,28 @@ describe('Check digits', () => {
   })
 })
 
+// describe('Customs declarations', () => {
+//   test('clear needs paid duty; clearing releases the held container', async () => {
+//     const decl = id => `${cargo}/CustomsDeclarations(${id})/CargoService`
+//     await failsWith(POST(`${decl(ID.paintBOE)}.clear`, {}), 409, 'has not been paid')
+//     await POST(`${decl(ID.paintBOE)}.payDuty`, {})
+
+//     const res = await POST(`${decl(ID.paintBOE)}.clear`, { remarks: 'MSDS verified' })
+//     assert.equal(res.data.status_code, 'CLEARED')
+//     assert.ok(String(res.headers['sap-messages']).includes('released from customs hold'))
+
+//     const { data: box } = await GET(`${cargo}/Containers(${ID.paintBox})`)
+//     assert.equal(box.status_code, 'DISCHARGED')
+//   })
+
+//   test('broker must have the CHA role', async () => {
+//     await failsWith(PATCH(`${cargo}/CustomsDeclarations(${ID.machineryBOE})`, { broker_ID: ID.shipper }), 400, 'cannot be used as broker_ID')
+//   })
+// })
+
 describe('Customs declarations', () => {
   test('clear needs paid duty; clearing releases the held container', async () => {
-    const decl = id => `${cargo}/CustomsDeclarations(${id})/CargoService`
+    const decl = id => `${cargo}/CustomsDeclarations(${active(id)})/CargoService`
     await failsWith(POST(`${decl(ID.paintBOE)}.clear`, {}), 409, 'has not been paid')
     await POST(`${decl(ID.paintBOE)}.payDuty`, {})
 
@@ -44,8 +64,9 @@ describe('Customs declarations', () => {
     assert.equal(box.status_code, 'DISCHARGED')
   })
 
-  test('broker must have the CHA role', async () => {
-    await failsWith(PATCH(`${cargo}/CustomsDeclarations(${ID.machineryBOE})`, { broker_ID: ID.shipper }), 400, 'cannot be used as broker_ID')
+  test('broker must have the CHA role (checked when the draft is saved)', async () => {
+    await failsWith(cargoDraft.edit('CustomsDeclarations', ID.machineryBOE, { broker_ID: ID.shipper }),
+      400, 'cannot be used as broker_ID')
   })
 })
 

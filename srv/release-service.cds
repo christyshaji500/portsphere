@@ -2,8 +2,10 @@ using { portsphere as ps } from '../db/documents';
 
 /** Shipping line + gate operator: cargo release and signed documents */
 service ReleaseService @(path: '/release') {
+  @odata.draft.enabled
   entity DeliveryOrders as projection on ps.DeliveryOrders;
   // entity GatePasses     as projection on ps.GatePasses;
+  @odata.draft.enabled
   entity GatePasses as projection on ps.GatePasses actions {
     action gateIn()  returns GatePasses;
     action gateOut() returns GatePasses;

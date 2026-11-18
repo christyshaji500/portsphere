@@ -128,11 +128,7 @@
               "controlConfiguration": {
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "tableSettings": {
-                    "type": "ResponsiveTable",
-                    "creationMode": {
-                      "name": "CreationDialog",
-                      "creationFields": "declarationNumber,type_code,bl_ID,broker_ID,currency_code"
-                    }
+                    "type": "ResponsiveTable"
                   }
                 }
               }
