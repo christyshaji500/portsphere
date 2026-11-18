@@ -10,12 +10,14 @@ const { SELECT, UPDATE } = cds.ql
  * with explicit conditions. Quoted aliases keep the column names identical on
  * SQLite and HANA (HANA would otherwise return them in upper case).
  */
-export function tariffsValidAt(at) {
-  return cds.run(
+export async function tariffsValidAt(at) {
+  const rows = await cds.run(
     `SELECT ID as "ID", chargeType_code as "chargeType", vesselType_code as "vesselType",
-            rate as "rate", unit as "unit", freeDays as "freeDays"
-       FROM portsphere_Tariffs
-      WHERE validFrom <= ? AND validTo > ?`, [toISO(at), toISO(at)])
+            rate as "rate", unit as "unit", freeDays as "freeDays",
+            validFrom as "validFrom", validTo as "validTo"
+       FROM portsphere_Tariffs`)
+  const t = new Date(at)
+  return rows.filter(r => new Date(r.validFrom) <= t && t < new Date(r.validTo))
 }
 
 /** Builds the invoice lines for a departed vessel call */
