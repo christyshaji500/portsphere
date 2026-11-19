@@ -1,56 +1,214 @@
 _schema-version: 3.3.0
 ID: portsphere
+description: PortSphere – digital port operations platform
 version: 1.0.0
-description: "A simple CAP project."
+modules:
+- name: portsphere-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: portsphere-auth
+  - name: portsphere-db
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    instances: 1
+  build-parameters:
+    builder: npm-ci
+- name: portsphere-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: portsphere-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: portsphere-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: portsphere-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - portspherevesselcalls.zip
+      name: portspherevesselcalls
+      target-path: resources/
+    - artifacts:
+      - portspherecargomanifests.zip
+      name: portspherecargomanifests
+      target-path: resources/
+    - artifacts:
+      - portspherecustomsclearance.zip
+      name: portspherecustomsclearance
+      target-path: resources/
+    - artifacts:
+      - portspheregatepasses.zip
+      name: portspheregatepasses
+      target-path: resources/
+    - artifacts:
+      - portspheredeliveryorders.zip
+      name: portspheredeliveryorders
+      target-path: resources/
+    - artifacts:
+      - portsphereportbilling.zip
+      name: portsphereportbilling
+      target-path: resources/
+# NEW: registers the apps + XSUAA with the managed approuter under "portsphere.service"
+- name: portsphere-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: portsphere-destination-service
+    parameters:
+      content-target: true
+  - name: portsphere-repo-host
+    parameters:
+      service-key:
+        name: portsphere-repo-host-key
+  - name: portsphere-auth
+    parameters:
+      service-key:
+        name: portsphere-auth-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: portsphere_html_repo_host
+          ServiceInstanceName: portsphere-html5-service
+          ServiceKeyName: portsphere-repo-host-key
+          sap.cloud.service: portsphere.service
+        - Name: portsphere_uaa
+          Authentication: OAuth2UserTokenExchange
+          ServiceInstanceName: portsphere-auth
+          ServiceKeyName: portsphere-auth-key
+          sap.cloud.service: portsphere.service
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: portspherevesselcalls
+  type: html5
+  path: app/vesselcalls
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: portspherecargomanifests
+  type: html5
+  path: app/cargomanifests
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: portspherecustomsclearance
+  type: html5
+  path: app/customsclearance
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: portspheregatepasses
+  type: html5
+  path: app/gatepasses
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: portspheredeliveryorders
+  type: html5
+  path: app/deliveryorders
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: portsphereportbilling
+  type: html5
+  path: app/portbilling
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: portsphere-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      oauth2-configuration:
+        credential-types:
+        - binding-secret
+        - x509
+      tenant-mode: dedicated
+      xsappname: portsphere-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+- name: portsphere-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: portsphere-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: portsphere-html5-service
+    service-plan: app-host
+# CHANGED: HTML5 runtime on + "srv-api" destination to the CAP backend (forwards the user's token)
+- name: portsphere-destination-service
+  type: org.cloudfoundry.managed-service
+  requires:
+  - name: srv-api
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            Name: srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: portsphere-destination-service
+    service-plan: lite
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-    - builder: custom
-      commands:
-        - npm ci
-        - npx cds build --production
-modules:
-  - name: portsphere-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      instances: 1
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm-ci
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: portsphere-auth
-      - name: portsphere-db
-
-  - name: portsphere-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: portsphere-db
-
-resources:
-  - name: portsphere-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: portsphere-${org}-${space}
-        tenant-mode: dedicated
-        oauth2-configuration:
-          credential-types:
-            - "binding-secret"
-            - "x509"
-  - name: portsphere-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

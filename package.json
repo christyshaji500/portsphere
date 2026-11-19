@@ -12,7 +12,9 @@
     "@cap-js/cds-test": "^1.0.2",
     "@cap-js/sqlite": "^3",
     "@sap/cds-dk": "^10",
-    "cds-plugin-ui5": "^0.17.0"
+    "cds-plugin-ui5": "^0.17.0",
+    "rimraf": "^5.0.5",
+    "mbt": "^1.2.49"
   },
   "scripts": {
     "start": "cds-serve",
@@ -23,7 +25,10 @@
     "watch-customsclearance": "cds watch --open portsphere.customsclearance/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-gatepasses": "cds watch --open portsphere.gatepasses/index.html?sap-ui-xx-viewCache=false --livereload false",
     "watch-deliveryorders": "cds watch --open portsphere.deliveryorders/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-portbilling": "cds watch --open portsphere.portbilling/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-portbilling": "cds watch --open portsphere.portbilling/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "undeploy": "cf undeploy portsphere --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
   "private": true,
   "workspaces": [

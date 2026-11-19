@@ -17,7 +17,7 @@
     },
     "dataSources": {
       "mainService": {
-        "uri": "/cargo/",
+        "uri": "cargo/",
         "type": "OData",
         "settings": {
           "annotations": [],
@@ -152,6 +152,10 @@
   "sap.fiori": {
     "registrationIds": [],
     "archeType": "transactional"
+  },
+    "sap.cloud": {
+    "public": true,
+    "service": "portsphere.service"
   },
   "sap.fe": {
     "app": {
